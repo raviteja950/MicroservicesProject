@@ -32,7 +32,7 @@ public class loginController {
 		try {
 			UserEntity userDetails = repo.findByEmail(user.getEmail());
 			if (userDetails == null || !user.getPassword().equalsIgnoreCase(userDetails.getPassword())) {
-				throw new CustomException("In-valid  Credentials");
+				throw new CustomException("In-valid Credentials");
 			} else {
 				String token = jwt.generateToken(user.getEmail());
 				responce.setMessage(token);
