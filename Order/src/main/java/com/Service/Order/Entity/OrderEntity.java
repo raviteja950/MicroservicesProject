@@ -15,6 +15,7 @@ public class OrderEntity {
 	private String userName;
 	private String productName;
 	private String price;
+	private String jwtToken;
 
 	public Long getId() {
 		return id;
@@ -64,6 +65,23 @@ public class OrderEntity {
 	public OrderEntity() {
 		super();
 		// TODO Auto-generated constructor stub
+	}
+
+	public String getJwtToken() {
+		return jwtToken;
+	}
+
+	public void setJwtToken(String jwtToken) {
+		this.jwtToken = jwtToken;
+	}
+
+	public OrderEntity(Long id, String userName, String productName, String price, String jwtToken) {
+		super();
+		this.id = id;
+		this.userName = userName;
+		this.productName = productName;
+		this.price = price;
+		this.jwtToken = jwtToken;
 	}
 
 }

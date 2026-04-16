@@ -2,6 +2,7 @@ package com.Service.User.Controller;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -11,6 +12,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.Service.User.Bean.Responce;
 import com.Service.User.Entity.UserEntity;
+import com.Service.User.Exception.CustomException;
+import com.Service.User.Security.jwtUtility;
 import com.Service.User.Service.UserService;
 
 import io.swagger.v3.oas.annotations.Parameter;
@@ -18,6 +21,9 @@ import io.swagger.v3.oas.annotations.enums.ParameterIn;
 
 @RestController
 public class UserController {
+
+	@Autowired
+	private jwtUtility util;
 
 	private UserService service;
 

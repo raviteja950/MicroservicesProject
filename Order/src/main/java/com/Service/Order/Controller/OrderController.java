@@ -8,15 +8,24 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.Service.Order.Entity.OrderEntity;
 import com.Service.Order.Service.OrderService;
+import com.Service.Order.bean.Responce;
 
 @RestController
 public class OrderController {
-	
+
 	@Autowired
 	private OrderService service;
 
 	@PostMapping("/order")
-	public OrderEntity createOrder(@RequestBody OrderEntity order, @RequestHeader("Authorization") String token) {
-		return service.createOrder(order, token);
+	public Responce createOrder(@RequestBody OrderEntity order) {
+
+		Responce res = new Responce();
+		try {
+			res = service.createOrder(order);
+		} catch (Exception e) {
+			res.setCode(400);
+			res.setMessage(e.getMessage());
+		}
+		return res;
 	}
 }

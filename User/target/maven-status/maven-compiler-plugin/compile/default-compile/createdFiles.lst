@@ -1,10 +1,15 @@
+com\Service\User\Bean\ErrorResponce.class
+com\Service\User\Bean\Responce.class
+com\Service\User\Exception\CustomException.class
 com\Service\User\Repository\userRepository.class
-com\Service\User\Security\SecurityConfig.class
+com\Service\User\Config\SwaggerConfig.class
 com\Service\User\AuthController\loginController.class
-com\Service\User\Security\jwtUtility.class
 com\Service\User\Bean\authenticateUser.class
 com\Service\User\Security\jwtSecurityFilter.class
 com\Service\User\Entity\UserEntity.class
+com\Service\User\Security\SecurityConfig.class
+com\Service\User\Security\jwtUtility.class
+com\Service\User\Exception\GlobalExceptionHandeler.class
 com\Service\User\Controller\UserController.class
 com\Service\User\Service\UserService.class
 com\Service\User\UserApplication.class
