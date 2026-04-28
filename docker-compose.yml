@@ -1,0 +1,59 @@
+
+services:
+
+  eureka:
+   build: /EurekaServer/.
+   container_name: eureka-server
+   ports:
+    - "8761:8761"
+   
+
+  database: 
+    image: mysql:8.0
+    container_name: my-sql-database
+    environment:
+      MYSQL_DATABASE : UserDetails
+      MYSQL_ROOT_PASSWORD : Raviteja@950
+    ports:
+      - "3307:3306"
+    volumes:
+      - tables_data:/var/lib/mysql
+  
+  userservice:
+   build: /User/.
+   container_name: userservice
+   ports: 
+    - "9001:9001"
+   depends_on:
+    - database
+    - eureka
+   environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://database:3306/UserDetails
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: Raviteja@950
+
+      SPRING_APPLICATION_NAME: user-service
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
+  
+  orderserve:
+   build: /Order/.
+   container_name: orderserve
+   ports:
+    - "9002:9002"
+   depends_on:
+     - database 
+     - eureka
+   environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://database:3306/UserDetails
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: Raviteja@950
+
+      SPRING_APPLICATION_NAME: order-service
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
+    
+volumes:
+   tables_data:
+
+
+  
+       
