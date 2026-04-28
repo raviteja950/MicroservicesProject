@@ -26,16 +26,15 @@ public class OrderService {
 	@Autowired
 	private OrderRepo repo;
 
-	@Bean
-	public RestTemplate restTemplate() {
-		return new RestTemplate();
-	}
+
+	@Autowired
+	private  RestTemplate restTemplate;
 
 	public Responce createOrder(OrderEntity order) {
 
 		Responce responce = new Responce();
 		try {
-			responce = validateUser(order.getUserName(),order.getJwtToken());
+			responce = validateUser(order.getJwtToken());
 			if (responce.getCode() == 200) {
 				repo.save(order);
 				responce.setCode(200);
@@ -54,7 +53,7 @@ public class OrderService {
 		return responce;
 	}
 
-	public Responce validateUser(String userId,String token) {
+	public Responce validateUser(String token) {
 
 		Responce res = new Responce();
 		try {
@@ -63,8 +62,9 @@ public class OrderService {
 			headers.set("Authorization", "Bearer " + token);
 
 			HttpEntity<?> entity = new HttpEntity<>( headers);
-			ResponseEntity<String> response = restTemplate().exchange(
-					"http://localhost:9001/getSpecificUserdetils/" + userId, HttpMethod.GET, entity, String.class);
+			ResponseEntity<String> response = restTemplate
+					.exchange(
+					"http://user-service/isValidUser", HttpMethod.GET, entity, String.class);
 
 			String responseBody = response.getBody();
 
