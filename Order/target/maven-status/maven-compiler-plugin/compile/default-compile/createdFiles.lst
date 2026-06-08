@@ -8,3 +8,4 @@ com\Service\Order\Service\OrderService.class
 com\Service\Order\Entity\OrderEntity.class
 com\Service\Order\Config\SwaggerConfig.class
 com\Service\Order\Exception\CustomException.class
+com\Service\Order\Util\Templates.class

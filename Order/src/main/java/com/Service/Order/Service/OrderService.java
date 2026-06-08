@@ -11,14 +11,17 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestTemplate;
 
 import com.Service.Order.Entity.OrderEntity;
 import com.Service.Order.Exception.CustomException;
 import com.Service.Order.Repository.OrderRepo;
+import com.Service.Order.Util.userFeignClient;
 import com.Service.Order.bean.Responce;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.netflix.discovery.shared.Application;
 
 @Component
 public class OrderService {
@@ -26,16 +29,21 @@ public class OrderService {
 	@Autowired
 	private OrderRepo repo;
 
+	@Autowired
+	private RestTemplate restTemplate;
 
 	@Autowired
-	private  RestTemplate restTemplate;
+	private RestClient restClient;
+
+	@Autowired
+	private userFeignClient feignClient;
 
 	public Responce createOrder(OrderEntity order) {
 
 		Responce responce = new Responce();
 		try {
-			responce = validateUser(order.getJwtToken());
-			if (responce.getCode() == 200) {
+			responce = validateUserFeignClinet(order.getJwtToken());
+			if (responce.isUserValid()) {
 				repo.save(order);
 				responce.setCode(200);
 				responce.setMessage("Order created sucessfully");
@@ -53,7 +61,7 @@ public class OrderService {
 		return responce;
 	}
 
-	public Responce validateUser(String token) {
+	public Responce validateUserUsingRestTemplate(String token) {
 
 		Responce res = new Responce();
 		try {
@@ -61,10 +69,9 @@ public class OrderService {
 			headers.setContentType(MediaType.APPLICATION_JSON);
 			headers.set("Authorization", "Bearer " + token);
 
-			HttpEntity<?> entity = new HttpEntity<>( headers);
-			ResponseEntity<String> response = restTemplate
-					.exchange(
-					"http://user-service/isValidUser", HttpMethod.GET, entity, String.class);
+			HttpEntity<?> entity = new HttpEntity<>(headers);
+			ResponseEntity<String> response = restTemplate.exchange("http://user-service/isValidUser", HttpMethod.GET,
+					entity, String.class);
 
 			String responseBody = response.getBody();
 
@@ -85,5 +92,54 @@ public class OrderService {
 			res.setMessage(e.getMessage());
 		}
 		return res;
+	}
+
+	public Responce validateUserUsingRestClinet(String token) {
+
+		Responce res = new Responce();
+		try {
+
+			res = restClient.get().uri("http://localhost:9001/isValidUser").accept(MediaType.APPLICATION_JSON)
+					.header("Authorization", "Bearer " + token).retrieve().body(Responce.class);
+
+			if (res.getCode() != 200) {
+				throw new CustomException(res.getMessage());
+			} else {
+				res.setCode(200);
+				res.setMessage("Fetched sucessfully user details from user service");
+				res.setUserValid(false);
+			}
+
+		} catch (Exception e) {
+			res.setCode(400);
+			res.setMessage(e.getMessage());
+		}
+
+		return res;
+
+	}
+
+	public Responce validateUserFeignClinet(String token) {
+
+		Responce res = new Responce();
+		try {
+
+			res = feignClient.isValidUser("Bearer "+ token);
+
+			if (res.getCode() != 200) {
+				throw new CustomException(res.getMessage());
+			} else {
+				res.setCode(200);
+				res.setMessage("Fetched sucessfully user details from user service");
+				res.setUserValid(false);
+			}
+
+		} catch (Exception e) {
+			res.setCode(400);
+			res.setMessage(e.getMessage());
+		}
+
+		return res;
+
 	}
 }
