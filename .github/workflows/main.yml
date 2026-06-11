@@ -21,6 +21,7 @@ jobs:
       uses: actions/checkout@v4
 
     - name: Build and Package Spring Boot App
+      working-directory: MicroservicesProject/User   # <-- Put the path here instead!
       run: |
         chmod +x ./mvnw
         ./mvnw clean package
