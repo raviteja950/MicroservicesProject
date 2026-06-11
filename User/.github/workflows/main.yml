@@ -1,0 +1,19 @@
+name: Spring Boot CI Build
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container:
+      image: eclipse-temurin:17-jdk-alpine
+    steps:
+     - name: Checkout repository code
+        uses: actions/checkout@v4
+
+     - name: Build and Package Spring Boot App
+        run: |
+        chmod +x ./mvnw
+        ./mvnw clean package
