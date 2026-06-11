@@ -16,7 +16,7 @@ jobs:
       uses: actions/checkout@v4
 
     - name: Build and Package Spring Boot App 
-      working-directory: MicroservicesProject/User
+      working-directory: User
       run: |
        pwd
        chmod +x ./mvnw
