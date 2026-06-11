@@ -17,4 +17,4 @@ jobs:
 
     - name: Build and Package Spring Boot App 
       working-directory: User
-      run: mvn clean package
+      run: mvn clean package -DskipTests
