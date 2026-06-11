@@ -11,7 +11,7 @@ jobs:
     # Add these two lines to tell GitHub where your microservice code lives
     defaults:
       run:
-        working-directory: microservice/User
+        working-directory: MicroservicesProject/User
 
     container:
       image: eclipse-temurin:17-jdk-alpine
