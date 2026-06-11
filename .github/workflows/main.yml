@@ -20,8 +20,8 @@ jobs:
     - name: Checkout repository code
       uses: actions/checkout@v4
 
-    - name: Build and Package Spring Boot App
-      working-directory: MicroservicesProject/User   # <-- Put the path here instead!
+    - name: Build and Package Spring Boot App   # <-- Put the path here instead!
       run: |
-        chmod +x ./mvnw
-        ./mvnw clean package
+       pwd
+       chmod +x ./mvnw
+       ./mvnw clean package
