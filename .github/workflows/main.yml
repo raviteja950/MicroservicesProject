@@ -7,11 +7,6 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    
-    # Add these two lines to tell GitHub where your microservice code lives
-    defaults:
-      run:
-        working-directory: MicroservicesProject/User
 
     container:
       image: eclipse-temurin:17-jdk-alpine
@@ -20,7 +15,8 @@ jobs:
     - name: Checkout repository code
       uses: actions/checkout@v4
 
-    - name: Build and Package Spring Boot App   # <-- Put the path here instead!
+    - name: Build and Package Spring Boot App 
+      working-directory: MicroservicesProject/User
       run: |
        pwd
        chmod +x ./mvnw
