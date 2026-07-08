@@ -19,11 +19,5 @@ public class SwaggerConfig {
 				.components(new Components().addSecuritySchemes("BearerAuth", new SecurityScheme().name("Authorization")
 						.type(SecurityScheme.Type.HTTP).scheme("bearer").bearerFormat("JWT")));
 	}
-	
-	@Bean
-    @LoadBalanced // Essential for 'http://user-service' to work
-    public RestTemplate restTemplate() {
-        return new RestTemplate();
-    }
 
 }

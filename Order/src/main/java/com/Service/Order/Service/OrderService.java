@@ -1,9 +1,14 @@
 package com.Service.Order.Service;
 
+import java.net.URI;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.client.ServiceInstance;
+import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -30,26 +35,34 @@ public class OrderService {
 	private OrderRepo repo;
 
 	@Autowired
-	private RestTemplate restTemplate;
+	RestTemplate restTemplate;
+
+//	@Autowired
+//	private RestClient restClient;
+//
+//	@Autowired
+//	private userFeignClient feignClient;
 
 	@Autowired
-	private RestClient restClient;
-
-	@Autowired
-	private userFeignClient feignClient;
+	private DiscoveryClient discoveryClient;
+	
+	@Value("${userService.Url}")
+	private String userServiceUrl;
+	
 
 	public Responce createOrder(OrderEntity order) {
 
 		Responce responce = new Responce();
 		try {
-			responce = validateUserFeignClinet(order.getJwtToken());
+			//responce = validateUserFeignClinet(order.getJwtToken());
+			responce = validateUserUsingRestTemplate(order.getJwtToken());
 			if (responce.isUserValid()) {
 				repo.save(order);
 				responce.setCode(200);
 				responce.setMessage("Order created sucessfully");
 			} else {
 
-				responce.setCode(400);
+				responce.setCode(responce.getCode());
 				responce.setMessage(responce.getMessage());
 			}
 
@@ -69,8 +82,16 @@ public class OrderService {
 			headers.setContentType(MediaType.APPLICATION_JSON);
 			headers.set("Authorization", "Bearer " + token);
 
+			List<ServiceInstance> list = discoveryClient.getInstances("user-service");
+
+			System.out.println(userServiceUrl);
+			
+			
+			URI uri = list.get(0).getUri();
+			System.out.println(uri);
+
 			HttpEntity<?> entity = new HttpEntity<>(headers);
-			ResponseEntity<String> response = restTemplate.exchange("http://user-service/isValidUser", HttpMethod.GET,
+			ResponseEntity<String> response = restTemplate.exchange( userServiceUrl+"/isValidUser", HttpMethod.GET,
 					entity, String.class);
 
 			String responseBody = response.getBody();
@@ -85,61 +106,61 @@ public class OrderService {
 			} else {
 				res.setCode(200);
 				res.setMessage("Fetched sucessfully user details from user service");
-				res.setUserValid(true);
-			}
-		} catch (Exception e) {
-			res.setCode(400);
-			res.setMessage(e.getMessage());
-		}
-		return res;
-	}
-
-	public Responce validateUserUsingRestClinet(String token) {
-
-		Responce res = new Responce();
-		try {
-
-			res = restClient.get().uri("http://localhost:9001/isValidUser").accept(MediaType.APPLICATION_JSON)
-					.header("Authorization", "Bearer " + token).retrieve().body(Responce.class);
-
-			if (res.getCode() != 200) {
-				throw new CustomException(res.getMessage());
-			} else {
-				res.setCode(200);
-				res.setMessage("Fetched sucessfully user details from user service");
 				res.setUserValid(false);
 			}
-
 		} catch (Exception e) {
 			res.setCode(400);
 			res.setMessage(e.getMessage());
 		}
-
 		return res;
-
 	}
 
-	public Responce validateUserFeignClinet(String token) {
-
-		Responce res = new Responce();
-		try {
-
-			res = feignClient.isValidUser("Bearer "+ token);
-
-			if (res.getCode() != 200) {
-				throw new CustomException(res.getMessage());
-			} else {
-				res.setCode(200);
-				res.setMessage("Fetched sucessfully user details from user service");
-				res.setUserValid(false);
-			}
-
-		} catch (Exception e) {
-			res.setCode(400);
-			res.setMessage(e.getMessage());
-		}
-
-		return res;
-
-	}
+//	public Responce validateUserUsingRestClinet(String token) {
+//
+//		Responce res = new Responce();
+//		try {
+//
+//			res = restClient.get().uri("http://localhost:9001/isValidUser").accept(MediaType.APPLICATION_JSON)
+//					.header("Authorization", "Bearer " + token).retrieve().body(Responce.class);
+//
+//			if (res.getCode() != 200) {
+//				throw new CustomException(res.getMessage());
+//			} else {
+//				res.setCode(200);
+//				res.setMessage("Fetched sucessfully user details from user service");
+//				res.setUserValid(false);
+//			}
+//
+//		} catch (Exception e) {
+//			res.setCode(400);
+//			res.setMessage(e.getMessage());
+//		}
+//
+//		return res;
+//
+//	}
+//
+//	public Responce validateUserFeignClinet(String token) {
+//
+//		Responce res = new Responce();
+//		try {
+//
+//			res = feignClient.isValidUser("Bearer " + token);
+//
+//			if (res.getCode() != 200) {
+//				throw new CustomException(res.getMessage());
+//			} else {
+//				res.setCode(200);
+//				res.setMessage("Fetched sucessfully user details from user service");
+//				res.setUserValid(false);
+//			}
+//
+//		} catch (Exception e) {
+//			res.setCode(400);
+//			res.setMessage(e.getMessage());
+//		}
+//
+//		return res;
+//
+//	}
 }
